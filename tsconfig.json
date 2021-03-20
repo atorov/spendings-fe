@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "esnext",
+    "lib": [
+      "dom",
+      "es5",
+      "ES2015"
+    ],
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "sourceMap": true,
+    "outDir": "./build/public",
+    "removeComments": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+  },
+  "exclude": [
+    ".vscode",
+    "node_modules",
+    "typings",
+    "public",
+    "__storage__",
+    "assets",
+    "build",
+    "dist",
+    "docs",
+    "externals",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

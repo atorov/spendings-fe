@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import AddNewRecord from './AddNewRecord'
+
 import './style.css'
 
 interface IRecord {
@@ -36,11 +38,9 @@ async function getRecords(year: number, month: number): Promise<IRecord[]> {
     }))
 }
 
-const App = () => {
+const App: React.FC = () => {
     const [year, setYear] = React.useState(new Date().getFullYear())
     const [month, setMonth] = React.useState(new Date().getMonth())
-    // const [date] = React.useState(new Date().getDate())
-    // console.log('::: TODO: Date', date, typeof date)
 
     const [records, setRecords] = React.useState([] as IRecord[])
 
@@ -63,7 +63,7 @@ const App = () => {
     return (
         <>
             <label htmlFor="year">
-                Година: &nbsp;
+                Година:&nbsp;
                 <select id="year" value={year} onChange={(event) => setYear(Number(event.target.value))}>
                     {Array(10).fill(null).map((_, idx) => (
                         <option key={idx} value={idx + 2020}>
@@ -89,13 +89,21 @@ const App = () => {
                 <p key={record.id}>
                     {JSON.stringify(record, null, 2)}
                     &nbsp;
-                    <button type="button" onClick={() => setRecords((prevRecords) => prevRecords.filter((prevRecord) => prevRecord.id !== record.id))}>
-                        Delete
+                    <button
+                        type="button"
+                        className="w3-button w3-round w3-pale-red w3-hover-red"
+                        onClick={() => setRecords((prevRecords) => prevRecords.filter((prevRecord) => prevRecord.id !== record.id))}
+                    >
+                        <i className="fas fa-trash" />
                     </button>
                 </p>
             ))}
 
-            {/* TODO: ... */}
+            <AddNewRecord
+                month={month}
+                monthNames={MONTH_NAMES}
+                year={year}
+            />
         </>
     )
 }

@@ -1,10 +1,16 @@
 import * as React from 'react'
 
 import AddNewRecord from './AddNewRecord'
+import Login from './Login'
 import CustomDropdown from './shared/CustomDropdown'
 
 import './style.css'
 
+interface IAuth {
+    user?: string;
+    role?: string;
+    token?: string;
+}
 interface IRecord {
     id: string;
     year: number;
@@ -40,6 +46,8 @@ async function getRecords(year: number, month: number): Promise<IRecord[]> {
 }
 
 const App: React.FC = () => {
+    const [auth] = React.useState({} as IAuth)
+
     const [year, setYear] = React.useState(new Date().getFullYear())
     const [month, setMonth] = React.useState(new Date().getMonth())
 
@@ -52,6 +60,10 @@ const App: React.FC = () => {
     React.useEffect(() => {
         console.log('::: TODO: records', records)
     }, [records])
+
+    if (!auth.token) {
+        return <Login />
+    }
 
     const filteredRecords = records
         .filter((record) => record.year === year && record.month === month)

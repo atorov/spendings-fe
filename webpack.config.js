@@ -23,12 +23,7 @@ const config = {
     resolve: {
         extensions: ['.ts', '.tsx', '.json', '.js'],
     },
-    entry: [
-        'core-js/stable',
-        'regenerator-runtime/runtime',
-        'whatwg-fetch',
-        `${SRC}`,
-    ],
+    entry: SRC,
     output: {
         path: DIST,
         publicPath: '/',

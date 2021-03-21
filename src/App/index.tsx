@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import AddNewRecord from './AddNewRecord'
+import CustomDropdown from './shared/CustomDropdown'
 
 import './style.css'
 
@@ -61,29 +62,23 @@ const App: React.FC = () => {
         })
 
     return (
-        <>
-            <label htmlFor="year">
-                Година:&nbsp;
-                <select id="year" value={year} onChange={(event) => setYear(Number(event.target.value))}>
-                    {Array(10).fill(null).map((_, idx) => (
-                        <option key={idx} value={idx + 2020}>
-                            {idx + 2020}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            &nbsp;
-            <label htmlFor="month">
-                Месец:&nbsp;
-                <select id="month" value={month} onChange={(event) => setMonth(+event.target.value)}>
-                    {MONTH_NAMES.map((monthName, idx) => (
-                        <option key={idx} value={idx}>
-                            {monthName}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <br />
+        <div className="w3-container">
+            <hr />
+            <div className="w3-container">
+                <CustomDropdown
+                    value={year}
+                    items={Array(10).fill(null).map((_, idx) => ({ value: idx + 2020 }))}
+                    onSetValue={setYear}
+                />
+                &nbsp;
+                <CustomDropdown
+                    value={month}
+                    displayValue={MONTH_NAMES[month]}
+                    items={MONTH_NAMES.map((monthName, idx) => ({ value: idx, displayValue: monthName }))}
+                    onSetValue={setMonth}
+                />
+            </div>
+            <hr />
 
             {filteredRecords.map((record) => (
                 <p key={record.id}>
@@ -99,12 +94,14 @@ const App: React.FC = () => {
                 </p>
             ))}
 
+            <hr />
             <AddNewRecord
                 month={month}
                 monthNames={MONTH_NAMES}
                 year={year}
             />
-        </>
+            <hr />
+        </div>
     )
 }
 

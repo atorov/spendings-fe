@@ -7,9 +7,10 @@ import CustomDropdown from './shared/CustomDropdown'
 import './style.css'
 
 interface IAuth {
-    user?: string;
+    accessToken?: string;
+    name?: string;
     role?: string;
-    token?: string;
+    userId?: string;
 }
 interface IRecord {
     id: string;
@@ -30,6 +31,10 @@ if (appLoaderElement) {
     appLoaderElement.parentNode?.removeChild(appLoaderElement)
 }
 
+function checkAuth(auth: IAuth) {
+    return !!auth.accessToken && !!auth.name && ([':ADMIN:', ':SP_USER:'].includes(auth.role || ''))
+}
+
 async function getRecords(year: number, month: number): Promise<IRecord[]> {
     console.log('::: TODO:', year, month)
     return Array(10).fill(null).map((_, idx) => ({
@@ -46,7 +51,7 @@ async function getRecords(year: number, month: number): Promise<IRecord[]> {
 }
 
 const App: React.FC = () => {
-    const [auth] = React.useState({} as IAuth)
+    const [auth, setAuth] = React.useState({} as IAuth)
 
     const [year, setYear] = React.useState(new Date().getFullYear())
     const [month, setMonth] = React.useState(new Date().getMonth())
@@ -61,9 +66,7 @@ const App: React.FC = () => {
         console.log('::: TODO: records', records)
     }, [records])
 
-    if (!auth.token) {
-        return <Login />
-    }
+    const content = checkAuth(auth) ? null : <Login setAuth={setAuth} />
 
     const filteredRecords = records
         .filter((record) => record.year === year && record.month === month)
@@ -75,6 +78,8 @@ const App: React.FC = () => {
 
     return (
         <div className="w3-container">
+            {content}
+
             <hr />
             <div className="w3-container">
                 <CustomDropdown

@@ -15,7 +15,7 @@ const Header: React.FC<IProps> = (props: IProps) => (
         }}
     >
         <h3 className="w3-bar">
-            Месечен отчет
+            Месечени разходи
         </h3>
         <div>
             {props.appStatus.endsWith(':READY:') ? <i className="fas fa-check fa-2x w3-text-green" /> : null}

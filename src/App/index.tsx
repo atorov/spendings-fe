@@ -1,18 +1,12 @@
 import * as React from 'react'
 
-// import AddNewRecord from './AddNewRecord'
+import AddNewRecord from './AddNewRecord'
 import Header from './Header'
 import Login from './Login'
-// import CustomDropdown from './shared/CustomDropdown'
+import CustomDropdown from './shared/CustomDropdown'
+import IAuth from './shared/interfaces/auth'
 
 import './style.css'
-
-interface IAuth {
-    accessToken?: string;
-    name?: string;
-    role?: string;
-    userId?: string;
-}
 
 interface IRecord {
     id: string;
@@ -26,7 +20,7 @@ interface IRecord {
     willBePayedBy: string;
 }
 
-// const MONTH_NAMES = ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември']
+const MONTH_NAMES = ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември']
 
 const appLoaderElement = document.querySelector('.app-loader')
 if (appLoaderElement) {
@@ -53,17 +47,17 @@ async function getRecords(year: number, month: number): Promise<IRecord[]> {
 }
 
 const App: React.FC = () => {
-    const [status, setStatus] = React.useState(':INIT:START:')
+    const [status, setStatus] = React.useState(':GET_STARTED:')
     const [auth, setAuth] = React.useState({} as IAuth)
     const isAuth = checkAuth(auth)
-    const [year] = React.useState(new Date().getFullYear())
-    const [month] = React.useState(new Date().getMonth())
+    const [year, setYear] = React.useState(new Date().getFullYear())
+    const [month, setMonth] = React.useState(new Date().getMonth())
 
     const [records, setRecords] = React.useState([] as IRecord[])
 
     // Init
     React.useEffect(() => {
-        if (status === ':INIT:START:') {
+        if (status === ':GET_STARTED:') {
             setStatus(':INIT:PENDING:')
             const _authStr = sessionStorage.getItem('spendings-fe')
             if (_authStr) {
@@ -75,16 +69,16 @@ const App: React.FC = () => {
                     console.warn(reason)
                 }
             }
-            setStatus(':MAIN:READY:')
+            setStatus(':MAIN:')
         }
     }, [status])
 
     React.useEffect(() => {
-        if (!isAuth && !status.startsWith(':LOGIN:') && !status.startsWith(':INIT:')) {
-            setStatus(':LOGIN:READY:')
+        if (!isAuth && status.startsWith(':MAIN:')) {
+            setStatus(':LOGIN:')
         }
         else if (isAuth && status === ':LOGIN:READY:') {
-            setStatus(':MAIN:READY:')
+            setStatus(':MAIN:')
         }
     }, [isAuth, status])
 
@@ -125,6 +119,21 @@ const App: React.FC = () => {
 
         content = (
             <>
+                <div className="w3-container w3-padding w3-center">
+                    <CustomDropdown
+                        value={year}
+                        items={Array(10).fill(null).map((_, idx) => ({ value: idx + 2020 }))}
+                        onSetValue={setYear}
+                    />
+                    &nbsp;
+                    <CustomDropdown
+                        value={month}
+                        displayValue={MONTH_NAMES[month]}
+                        items={MONTH_NAMES.map((monthName, idx) => ({ value: idx, displayValue: monthName }))}
+                        onSetValue={setMonth}
+                    />
+                </div>
+
                 <ul className="w3-ul w3-card">
                     {filteredRecords.map((record) => (
                         <li key={record.id} className="w3-bar">
@@ -155,6 +164,7 @@ const App: React.FC = () => {
                         </li>
                     ))}
                 </ul>
+
                 {/* {
                     filteredRecords.map((record) => (
                         <p key={record.id}>
@@ -171,30 +181,16 @@ const App: React.FC = () => {
                     ))
                 } */}
 
-                {/* <hr />
-                <div className="w3-container">
-                    <CustomDropdown
-                        value={year}
-                        items={Array(10).fill(null).map((_, idx) => ({ value: idx + 2020 }))}
-                        onSetValue={setYear}
-                    />
-                        &nbsp;
-                    <CustomDropdown
-                        value={month}
-                        displayValue={MONTH_NAMES[month]}
-                        items={MONTH_NAMES.map((monthName, idx) => ({ value: idx, displayValue: monthName }))}
-                        onSetValue={setMonth}
-                    />
-                </div>
-                <hr /> */}
-
-                {/* <hr />
+                <hr />
                 <AddNewRecord
+                    auth={auth}
                     month={month}
                     monthNames={MONTH_NAMES}
                     year={year}
                 />
-                <hr /> */}
+                <hr />
+
+                <br />
             </>
         )
     }

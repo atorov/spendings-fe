@@ -15,7 +15,7 @@ const Login: React.FC<IProps> = (props: IProps) => {
     const setAppStatus = props.setAppStatus
     React.useEffect(() => {
         if (props.appStatus === ':LOGIN:ERROR:' && prevStatus.current === ':LOGIN:ERROR:' && (name || password)) {
-            setAppStatus(':LOGIN:READY:')
+            setAppStatus(':LOGIN:')
         }
         prevStatus.current = props.appStatus
     }, [name, password, props.appStatus, setAppStatus])
@@ -85,7 +85,7 @@ const Login: React.FC<IProps> = (props: IProps) => {
                         const content = await response.json()
                         props.setAuth(content)
                         sessionStorage.setItem('spendings-fe', JSON.stringify(content))
-                        setAppStatus(':MAIN:READY:')
+                        setAppStatus(':LOGIN:READY:')
                     }
                     catch (error) {
                         console.error(error)
@@ -101,7 +101,7 @@ const Login: React.FC<IProps> = (props: IProps) => {
                             name="name"
                             type="text"
                             value={name}
-                            disabled={props.appStatus.endsWith(':PENDING:')}
+                            disabled={props.appStatus === ':LOGIN:PENDING:'}
                             className="w3-input"
                             onChange={(event) => setName(event.target.value)}
                         />
@@ -115,16 +115,17 @@ const Login: React.FC<IProps> = (props: IProps) => {
                             name="password"
                             type="password"
                             value={password}
-                            disabled={props.appStatus.endsWith(':PENDING:')}
+                            disabled={props.appStatus === ':LOGIN:PENDING:'}
                             className="w3-input"
                             onChange={(event) => setPassword(event.target.value)}
                         />
                     </label>
                 </p>
-                {props.appStatus === ':LOGIN:READY:' && name && password ? (
+                {name && password ? (
                     <p className="w3-animate-zoom">
                         <button
                             type="submit"
+                            disabled={props.appStatus === ':LOGIN:PENDING:'}
                             className="w3-button w3-blue w3-round w3-block"
                         >
                             OK

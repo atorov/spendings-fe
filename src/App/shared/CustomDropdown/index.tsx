@@ -9,6 +9,7 @@ interface IProps {
     value: number | string;
     displayValue?: string | null;
     items: IItem[];
+    style?: any,
     onSetValue: Function;
 }
 
@@ -18,7 +19,7 @@ const CustomDropdown: React.FC<IProps> = (props: IProps) => {
     const displayValue = props.displayValue === null ? String(props.value) : props.displayValue
 
     return (
-        <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'inline-block', ...props.style }}>
             <button
                 type="button"
                 className={`w3-button w3-round ${isOpened ? 'w3-blue' : 'w3-pale-blue'} w3-hover-blue`}
@@ -30,7 +31,7 @@ const CustomDropdown: React.FC<IProps> = (props: IProps) => {
             </button>
             <div
                 className="w3-dropdown-content w3-bar-block w3-border"
-                style={{ display: isOpened ? 'block' : 'none', maxHeight: 180, overflow: 'auto' }}
+                style={{ display: isOpened ? 'block' : 'none', maxHeight: 200, overflow: 'auto' }}
             >
                 {props.items.map((item) => {
                     const itemDisplayValue = !item.displayValue ? String(item.value) : item.displayValue
@@ -55,6 +56,7 @@ const CustomDropdown: React.FC<IProps> = (props: IProps) => {
 
 CustomDropdown.defaultProps = {
     displayValue: null,
+    style: {},
 }
 
 export default CustomDropdown

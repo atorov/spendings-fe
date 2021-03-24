@@ -2,7 +2,6 @@ import * as React from 'react'
 
 interface IProps {
     appStatus: string;
-    isAuth: boolean;
 }
 
 const Header: React.FC<IProps> = (props: IProps) => (
@@ -18,15 +17,11 @@ const Header: React.FC<IProps> = (props: IProps) => (
         <h3 className="w3-bar">
             Месечен отчет
         </h3>
-        {props.isAuth ? (
-            <div>
-                {{
-                    ':READY:': <i className="fas fa-check fa-2x w3-text-green" />,
-                    ':PENDING:': <i className="fas fa-cog fa-spin fa-2x" />,
-                    ':ERROR:': <i className="fas fa-bomb fa-2x w3-text-red" />,
-                }[props.appStatus]}
-            </div>
-        ) : null}
+        <div>
+            {props.appStatus.endsWith(':READY:') ? <i className="fas fa-check fa-2x w3-text-green" /> : null}
+            {props.appStatus.endsWith(':PENDING:') ? <i className="fas fa-cog fa-spin fa-2x" /> : null}
+            {props.appStatus.endsWith(':ERROR:') ? <i className="fas fa-bomb fa-2x w3-text-red" /> : null}
+        </div>
     </header>
 )
 

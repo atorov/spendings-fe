@@ -1,52 +1,95 @@
 import * as React from 'react'
 
 interface IProps {
+    appStatus: string;
+    setAppStatus: Function;
     setAuth: Function;
 }
 
 const Login: React.FC<IProps> = (props: IProps) => {
-    const [status, setStatus] = React.useState(':READY:' as ':READY:' | ':PENDING:' | ':ERROR:')
-    const prevStatus = React.useRef(status)
+    const prevStatus = React.useRef(props.appStatus)
 
     const [name, setName] = React.useState('')
     const [password, setPassword] = React.useState('')
 
+    const setAppStatus = props.setAppStatus
     React.useEffect(() => {
-        if (status === ':ERROR:' && prevStatus.current === ':ERROR:' && (name || password)) {
-            setStatus(':READY:')
+        if (props.appStatus === ':LOGIN:ERROR:' && prevStatus.current === ':LOGIN:ERROR:' && (name || password)) {
+            setAppStatus(':LOGIN:READY:')
         }
-        prevStatus.current = status
-    }, [name, password, status])
+        prevStatus.current = props.appStatus
+    }, [name, password, props.appStatus, setAppStatus])
 
     return (
         <div className="w3-container">
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <button
+                    type="button"
+                    className={`w3-card w3-margin w3-round w3-animate-opacity ${name !== 'Hans' ? 'w3-grayscale-max w3-opacity' : ''}`}
+                    style={{
+                        display: 'block',
+                        width: 150,
+                        border: 'none',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                        setName('Hans')
+                        setPassword('')
+                    }}
+                >
+                    <img src="img/hans.png" alt="User Hans" style={{ width: '100%' }} />
+                    <h4 className="w3-center">
+                        Hans
+                    </h4>
+                </button>
+                <button
+                    type="button"
+                    className={`w3-card w3-margin w3-round w3-animate-opacity ${name !== 'Giuseppina' ? 'w3-grayscale-max w3-opacity' : ''}`}
+                    style={{
+                        display: 'block',
+                        width: 150,
+                        border: 'none',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                        setName('Giuseppina')
+                        setPassword('')
+                    }}
+                >
+                    <img src="img/giuseppina.png" alt="User Hans" style={{ width: '100%' }} />
+                    <h4 className="w3-center">
+                        Giuseppina
+                    </h4>
+                </button>
+            </div>
             <form
                 onSubmit={async (event) => {
                     event.preventDefault()
                     event.stopPropagation()
 
-                    setStatus(':PENDING:')
+                    setAppStatus(':LOGIN:PENDING:')
                     setName('')
                     setPassword('')
 
                     try {
                         const response = await fetch('https://uman-api-v1.herokuapp.com/api/auth', {
                             method: 'POST',
-                            headers: {
-                                Accept: 'application/json, text/plain, */*',
-                                'Content-Type': 'application/json',
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ name, password }),
                         })
                         if (!response.ok) {
                             throw new Error(String(response.status))
                         }
                         const content = await response.json()
-                        setStatus(':READY:')
                         props.setAuth(content)
+                        sessionStorage.setItem('spendings-fe', JSON.stringify(content))
+                        setAppStatus(':MAIN:READY:')
                     }
                     catch (error) {
-                        setStatus(':ERROR:')
+                        console.error(error)
+                        setAppStatus(':LOGIN:ERROR:')
                     }
                 }}
             >
@@ -58,7 +101,7 @@ const Login: React.FC<IProps> = (props: IProps) => {
                             name="name"
                             type="text"
                             value={name}
-                            disabled={![':READY:', ':ERROR:'].includes(status)}
+                            disabled={props.appStatus.endsWith(':PENDING:')}
                             className="w3-input"
                             onChange={(event) => setName(event.target.value)}
                         />
@@ -72,13 +115,13 @@ const Login: React.FC<IProps> = (props: IProps) => {
                             name="password"
                             type="password"
                             value={password}
-                            disabled={![':READY:', ':ERROR:'].includes(status)}
+                            disabled={props.appStatus.endsWith(':PENDING:')}
                             className="w3-input"
                             onChange={(event) => setPassword(event.target.value)}
                         />
                     </label>
                 </p>
-                {status === ':READY:' && name && password ? (
+                {props.appStatus === ':LOGIN:READY:' && name && password ? (
                     <p className="w3-animate-zoom">
                         <button
                             type="submit"
@@ -90,13 +133,13 @@ const Login: React.FC<IProps> = (props: IProps) => {
                 ) : null}
             </form>
 
-            {status === ':PENDING:' ? (
+            {props.appStatus === ':LOGIN:PENDING:' ? (
                 <div className="w3-text-blue w3-center w3-animate-zoom fa-3x">
                     <i className="fas fa-cog fa-spin" />
                 </div>
             ) : null}
 
-            {status === ':ERROR:' ? (
+            {props.appStatus === ':LOGIN:ERROR:' ? (
                 <>
                     <div className="w3-text-red w3-center w3-center w3-animate-zoom fa-3x">
                         <i className="fas fa-bomb" />

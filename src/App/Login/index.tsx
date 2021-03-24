@@ -78,15 +78,16 @@ const Login: React.FC<IProps> = (props: IProps) => {
                         />
                     </label>
                 </p>
-                <p>
-                    <button
-                        type="submit"
-                        disabled={status !== ':READY:' || !name || !password}
-                        className="w3-button w3-blue w3-round w3-block"
-                    >
-                        OK
-                    </button>
-                </p>
+                {status === ':READY:' && name && password ? (
+                    <p className="w3-animate-zoom">
+                        <button
+                            type="submit"
+                            className="w3-button w3-blue w3-round w3-block"
+                        >
+                            OK
+                        </button>
+                    </p>
+                ) : null}
             </form>
 
             {status === ':PENDING:' ? (

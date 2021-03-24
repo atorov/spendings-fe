@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import AddNewRecord from './AddNewRecord'
+import Header from './Header'
 import Login from './Login'
 import CustomDropdown from './shared/CustomDropdown'
 
@@ -20,7 +21,7 @@ interface IRecord {
     type: string;
     description?: string;
     amount: number;
-    madeBy: string;
+    payedBy: string;
     willBePayedBy: string;
 }
 
@@ -45,14 +46,16 @@ async function getRecords(year: number, month: number): Promise<IRecord[]> {
         type: 'string',
         description: 'string',
         amount: Math.random() * 100,
-        madeBy: 'string',
-        willBePayedBy: 'string',
+        payedBy: Math.random() < 0.5 ? 'H' : 'G',
+        // eslint-disable-next-line no-nested-ternary
+        willBePayedBy: Math.random() < 0.33 ? 'H' : Math.random() < 0.5 ? 'G' : 'HG',
     }))
 }
 
 const App: React.FC = () => {
+    const [status] = React.useState(':READY:' as ':READY:')
     const [auth, setAuth] = React.useState({} as IAuth)
-
+    const isAuth = checkAuth(auth)
     const [year, setYear] = React.useState(new Date().getFullYear())
     const [month, setMonth] = React.useState(new Date().getMonth())
 
@@ -66,8 +69,6 @@ const App: React.FC = () => {
         console.log('::: TODO: records', records)
     }, [records])
 
-    const content = checkAuth(auth) ? null : <Login setAuth={setAuth} />
-
     const filteredRecords = records
         .filter((record) => record.year === year && record.month === month)
         .sort((a, b) => {
@@ -77,8 +78,57 @@ const App: React.FC = () => {
         })
 
     return (
-        <div className="w3-container">
-            {content}
+        <>
+            <Header appStatus={status} isAuth={isAuth} />
+            {(() => (!isAuth ? <Login setAuth={setAuth} /> : (
+                <>
+                    <ul className="w3-ul w3-card">
+                        {filteredRecords.map((record) => (
+                            <li key={record.id} className="w3-bar">
+                                <img
+                                    src={record.payedBy === 'H' ? 'img/hans.png' : 'img/giuseppina.png'}
+                                    alt="TODO:"
+                                    className="w3-bar-item w3-circle"
+                                    style={{ width: 85 }}
+                                />
+                                <div className="w3-bar-item">
+                                    <span className="w3-large">
+                                        TODO:
+                                    </span>
+                                    <span className="w3-large">
+                                        TODO:
+                                    </span>
+                                    <br />
+                                    <span>
+                                        TODO: Lorem ipsum.
+                                    </span>
+                                </div>
+                                <span
+                                    className="w3-bar-item w3-button w3-xlarge w3-right"
+                                // onClick="this.parentElement.style.display='none'"
+                                >
+                                    &times;
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                    {
+                        filteredRecords.map((record) => (
+                            <p key={record.id}>
+                                {JSON.stringify(record, null, 2)}
+                        &nbsp;
+                                <button
+                                    type="button"
+                                    className="w3-button w3-round w3-pale-red w3-hover-red"
+                                    onClick={() => setRecords((prevRecords) => prevRecords.filter((prevRecord) => prevRecord.id !== record.id))}
+                                >
+                                    <i className="fas fa-trash" />
+                                </button>
+                            </p>
+                        ))
+                    }
+                </>
+            )))()}
 
             <hr />
             <div className="w3-container">
@@ -97,20 +147,6 @@ const App: React.FC = () => {
             </div>
             <hr />
 
-            {filteredRecords.map((record) => (
-                <p key={record.id}>
-                    {JSON.stringify(record, null, 2)}
-                    &nbsp;
-                    <button
-                        type="button"
-                        className="w3-button w3-round w3-pale-red w3-hover-red"
-                        onClick={() => setRecords((prevRecords) => prevRecords.filter((prevRecord) => prevRecord.id !== record.id))}
-                    >
-                        <i className="fas fa-trash" />
-                    </button>
-                </p>
-            ))}
-
             <hr />
             <AddNewRecord
                 month={month}
@@ -118,7 +154,7 @@ const App: React.FC = () => {
                 year={year}
             />
             <hr />
-        </div>
+        </>
     )
 }
 
